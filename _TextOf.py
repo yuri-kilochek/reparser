@@ -23,6 +23,6 @@ class TextOf(Parser):
         self.subject = subject
 
     def _parse(self, context):
-        for result in context.parse(self.subject, Result=MatchResult):
-            yield context.Result.from_lazy_value(lambda: str(context.text))
+        for result in context.parse(self.__subject, Result=MatchResult):
+            yield context.Result.make_from_value(context.text)
 

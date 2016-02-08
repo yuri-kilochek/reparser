@@ -33,8 +33,8 @@ class Then(Parser):
         self.right = right
 
     def _parse(self, context):
-        for left_text, right_text in context.text.partition():
-            for left_result in context.parse(self.left, text=left_text):
-                for right_result in context.parse(self.right, text=right_text):
+        for left_text, right_text in context.text.partitions:
+            for left_result in context.parse(self.__left, text=left_text):
+                for right_result in context.parse(self.__right, text=right_text):
                      yield left_result + right_result
 

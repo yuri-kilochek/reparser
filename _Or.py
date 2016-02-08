@@ -33,6 +33,6 @@ class Or(Parser):
         self.other = other
 
     def _parse(self, context):
-        yield from context.parse(this.some)
-        yield from context.parse(this.other)
+        yield from context.parse(this.__some)
+        yield from context.parse(this.__other)
 

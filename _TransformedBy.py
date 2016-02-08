@@ -7,7 +7,7 @@ from ._Parser import *
 class TransformedBy(Parser):
     __slots__ = (
         '__subject',
-        '__function',
+        '__transform',
     )
 
     @property
@@ -20,19 +20,19 @@ class TransformedBy(Parser):
         self.__subject = subject
 
     @property
-    def function(self):
-        return self.__function
+    def transform(self):
+        return self.__transform
 
-    @function.setter
-    def function(self, function):
-        assert callable(function)
-        self.__function = function
+    @transform.setter
+    def transform(self, transform):
+        assert callable(transform)
+        self.__transform = transform
 
-    def __init__(self, subject, function):
+    def __init__(self, subject, transform):
         self.subject = subject
-        self.function = function
+        self.transform = transform
 
     def _parse(self, context):
-        for result in context.parse(self.subject):
-            yield result ^ self.function
+        for result in context.parse(self.__subject):
+            yield result ^ self.__transform
 

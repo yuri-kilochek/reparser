@@ -2,19 +2,17 @@ __all__ = (
     'MatchResult',
 )
 
-from ._Result import *
-
-class MatchResult(Result):
+class MatchResult:
     __slots__ = ()
 
-    @staticmethod
-    def from_lazy_value(lazy_value):
-        return MatchResult.empty
+    @classmethod
+    def make_from_value(cls, value):
+        return cls.empty
 
-    def __add__(self, right):
-        return MatchResult.empty
+    def __add__(self, other):
+        return self
 
-    def __xor__(self, function):
-        return MatchResult.empty
+    def __xor__(self, transform):
+        return self
 
 MatchResult.empty = MatchResult()

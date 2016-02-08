@@ -39,6 +39,6 @@ class CharacterRange(Parser):
         self.stop = stop
 
     def _parse(self, context):
-        if len(context.text) == 1 and self.start <= str(context.text) <= self.stop:
+        if len(context.text) == 1 and self.__start <= str(context.text) <= self.__stop:
             yield context.Result.empty
 

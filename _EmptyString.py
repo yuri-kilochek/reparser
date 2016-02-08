@@ -8,6 +8,6 @@ class EmptyString(Parser):
     __slots__ = ()
 
     def _parse(self, context):
-        if not context.text:
+        if len(context.text) == 0:
             yield context.Result.empty
 

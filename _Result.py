@@ -2,25 +2,33 @@ __all__ = (
     'Result',
 )
 
-from itertools import chain
+class Result:
+    __slots__ = (
+        '__values',
+    )
 
-class Result(tuple):
-    __slots__ = ()
+    @classmethod
+    def make_from_value(cls, value):
+        return cls((value,))
 
-    @staticmethod
-    def from_lazy_value(lazy_value):
-        value = lazy_value()
-        return Result([value])
+    def __init__(self, values):
+        self.__values = values
 
-    def __add__(self, right):
-        if not self:
-            return right
-        if not right:
+    def __eq__(self, other):
+        return self.__values == other.__values
+
+    def __hash__(self):
+        return hash(self.__values)
+
+    def __add__(self, other):
+        if not self.__values:
+            return other
+        if not other.__values:
             return self
-        return Result(chain(self, right))
+        return self.__class__(self.__values + other.__values)
 
-    def __xor__(self, function):
-        return Result(function(*self))
+    def __xor__(self, transform):
+        return self.__class__(tuple(transform(*self.__values)))
 
-Result.empty = Result()
+Result.empty = Result(())
 
