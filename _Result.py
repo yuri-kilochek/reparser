@@ -7,6 +7,10 @@ class Result:
         '__values',
     )
 
+    @property
+    def values(self):
+        return self.__values
+
     @classmethod
     def make_from_value(cls, value):
         return cls((value,))
@@ -25,10 +29,10 @@ class Result:
             return other
         if not other.__values:
             return self
-        return self.__class__(self.__values + other.__values)
+        return Result(self.__values + other.__values)
 
     def __xor__(self, transform):
-        return self.__class__(tuple(transform(*self.__values)))
+        return Result(tuple(transform(*self.__values)))
 
 Result.empty = Result(())
 

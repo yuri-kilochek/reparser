@@ -5,6 +5,10 @@ __all__ = (
 class MatchResult:
     __slots__ = ()
 
+    @property
+    def values(self):
+        return ()
+
     @classmethod
     def make_from_value(cls, value):
         return cls.empty
