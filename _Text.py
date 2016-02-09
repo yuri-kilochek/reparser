@@ -2,76 +2,113 @@ __all__ = (
     'Text',
 )
 
-class Text:
-    class Position:
-        __slots__ = (
-            '__line',
-            '__column',
-        )
 
-        def __init__(self, line, column):
-            self.__line = line
-            self.__column = column
-
+class Text(str):
     __slots__ = (
-        '__string',
-        '__start_offset',
-        '__stop_offset',
+        '__positions',
     )
 
-    @peoperty
-    def start_offset(self):
-        return self.__start_offset
+    @property
+    def positions(self):
+        return self.__positions
 
-    @peoperty
-    def stop_offset(self):
-        return self.__stop_offset
+    def __init__(self, *args, **kwargs):
+        positions = []
 
-    def __init__(self, string, start=None, stop=None):
-        assert isinstance(string, str)
+        line = 0
+        column = 0
+        for character in self:
+            positions.append((line, column))
+            if character == '\n':
+                line += 1
+                column = 0
+            else:
+                column += 1
+        positions.append((line, column))
+
+        self.__positions = tuple(positions)
+
+
+class TextSlice(str):
+    __slots__ = (
+        '__text',
+        '__start',
+        '__stop',
+        '__partitions',
+    )
+
+    @property
+    def text(self):
+        return self.__text
+
+    @property
+    def start(self):
+        return self.__start
+
+    @property
+    def start_position(self):
+        return self.__text.positions[self.__start]
+
+    @property
+    def stop(self):
+        return self.__stop
+
+    @property
+    def stop_position(self):
+        return self.__text.positions[self.__stop]
+
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls)
+
+    def __init__(self, text, start=None, stop=None):
+        assert isinstance(text, Text)
 
         if start is None:
             start = 0
         else:
             assert isinstance(start, int)
             assert start >= 0
-            assert start <= len(string)
+            assert start <= len(text)
 
         if stop is None:
             stop = len(text)
         else:
             assert isinstance(stop, int)
             assert stop >= start
-            assert stop <= len(string)
+            assert stop <= len(text)
 
-        self.__string = string
+        self.__text = text
         self.__start = start
         self.__stop = stop
+        self.__partitions = None
 
     @property
     def before(self):
-        return self.__class__(self.__string, stop=self.__start)
+        return TextSlice(self.__text, stop=self.__start)
 
     @property
     def after(self):
-        return self.__class__(self.__string, start=self.__stop)
+        return TextSlice(self.__text, start=self.__stop)
 
-    def partition(self):
-        for split in range(self.__start, self.__stop + 1):
-            left = self.__class__(self.__string, self.__start, split)
-            right = self.__class__(self.__string, split, self.__stop)
-            yield left, right
-
-    def __bool__(self):
-        return self.__start < self.__stop
+    @property
+    def partitions(self):
+        if self.__partitions is None:
+            partitions = []
+            for cut in range(self.__start, self.__stop + 1):
+                left = TextSlice(self.__text, self.__start, cut)
+                right = TextSlice(self.__text, cut, self.__stop)
+                partitions.append((left, right))
+            self.__partitions = tuple(partitions)
+        return self.__partitions
 
     def __str__(self):
-        return self.__string[self.__start:self.__stop]
+        return str(self.__text[self.__start:self.__stop])
 
-    def __len__(self):
-        return self.__stop - self.__start
+    def __repr__(self):
+        return repr(str(self))
 
 
-    def __getitem__(self, index):
-        raise NotImplementedError()
+s = 'foo\nbar'
+for x in TextSlice(Text(s)).partitions:
+    print(x)
 
